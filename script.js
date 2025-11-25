@@ -1,0 +1,580 @@
+// Game State
+let balance = 1000.00;
+let inventory = [];
+let selectedItem = null;
+
+// Face-Safe Image Loading Helper
+// Ensures images are displayed without cropping faces
+function loadFaceSafeImage(imagePath, targetElement, options = {}) {
+    const defaults = {
+        facePosition: '35%', // Position face at 35% from top (eye level)
+        backgroundColor: 'rgba(30, 30, 45, 0.8)',
+        useContain: true
+    };
+    
+    const config = { ...defaults, ...options };
+    
+    if (targetElement) {
+        targetElement.style.backgroundImage = `url('${imagePath}')`;
+        targetElement.style.backgroundSize = config.useContain ? 'contain' : 'cover';
+        targetElement.style.backgroundPosition = `center ${config.facePosition}`;
+        targetElement.style.backgroundRepeat = 'no-repeat';
+        targetElement.style.backgroundColor = config.backgroundColor;
+        targetElement.style.backgroundClip = 'padding-box';
+    }
+}
+
+// Apply face-safe loading to all case images on page load
+function initializeFaceSafeImages() {
+    // Case images are handled via inline styles, but we ensure CSS uses contain
+    // This function can be extended for dynamic image loading
+    console.log('Face-safe image system initialized');
+}
+
+// Available media pool (images and videos)
+const mediaPool = {
+    images: ["rana2.jpg", "rana3.png", "rana4.png", "RANA5.png", "RANA6.jpg", "ranaxx.png", "zz.jpg", "rananew1.png", "rananew2.png"],
+    videos: ["rana gif.mp4", "ranavid.mp4", "ranavid3.mp4"]
+};
+
+// Track recently used media to avoid repetition
+let recentlyUsedMedia = {
+    images: [],
+    videos: [],
+    maxRecent: 3
+};
+
+// Helper function to get random media with anti-repetition
+function getRandomMedia(isVideo = false) {
+    const pool = isVideo ? mediaPool.videos : mediaPool.images;
+    const recent = isVideo ? recentlyUsedMedia.videos : recentlyUsedMedia.images;
+    
+    // Filter out recently used items
+    const available = pool.filter(item => !recent.includes(item));
+    const selectionPool = available.length > 0 ? available : pool;
+    
+    const selected = selectionPool[Math.floor(Math.random() * selectionPool.length)];
+    
+    // Add to recently used
+    recent.push(selected);
+    if (recent.length > recentlyUsedMedia.maxRecent) {
+        recent.shift();
+    }
+    
+    return selected;
+}
+
+// Helper function to get random media for rarity
+function getMediaForRarity(rarity) {
+    let videoChance = 0.3; // Default 30%
+    
+    // Increase video chances based on rarity
+    if (rarity === 'epic') {
+        videoChance = 0.6; // 60% chance for epic
+    } else if (rarity === 'legendary') {
+        videoChance = 0.8; // 80% chance for legendary
+    } else if (rarity === 'rare') {
+        videoChance = 0.4; // 40% chance for rare
+    }
+    
+    const useVideo = Math.random() < videoChance;
+    if (useVideo) {
+        return { type: 'video', src: getRandomMedia(true) };
+    }
+    return { type: 'image', src: getRandomMedia(false) };
+}
+
+// Item Database with CS2 Skins - randomized media
+const items = {
+    common: [
+        { name: "AK-47 | Redline", value: 2.50, rarity: "common", media: getMediaForRarity("common") },
+        { name: "AWP | Worm God", value: 3.00, rarity: "common", media: getMediaForRarity("common") },
+        { name: "M4A4 | Desert-Strike", value: 4.00, rarity: "common", media: getMediaForRarity("common") },
+        { name: "Glock-18 | Steel Disruption", value: 5.00, rarity: "common", media: getMediaForRarity("common") },
+        { name: "USP-S | Guardian", value: 6.00, rarity: "common", media: getMediaForRarity("common") },
+    ],
+    rare: [
+        { name: "AK-47 | Blue Laminate", value: 15.00, rarity: "rare", media: getMediaForRarity("rare") },
+        { name: "AWP | Corticera", value: 20.00, rarity: "rare", media: getMediaForRarity("rare") },
+        { name: "M4A1-S | Boreal Forest", value: 25.00, rarity: "rare", media: getMediaForRarity("rare") },
+        { name: "Desert Eagle | Crimson Web", value: 30.00, rarity: "rare", media: getMediaForRarity("rare") },
+        { name: "Glock-18 | Water Elemental", value: 35.00, rarity: "rare", media: getMediaForRarity("rare") },
+    ],
+    epic: [
+        { name: "AK-47 | Jaguar", value: 40.00, rarity: "epic", media: getMediaForRarity("epic") },
+        { name: "AWP | Redline", value: 50.00, rarity: "epic", media: getMediaForRarity("epic") },
+        { name: "M4A4 | X-Ray", value: 60.00, rarity: "epic", media: getMediaForRarity("epic") },
+        { name: "Desert Eagle | Hypnotic", value: 70.00, rarity: "epic", media: getMediaForRarity("epic") },
+        { name: "Glock-18 | Fade", value: 80.00, rarity: "epic", media: getMediaForRarity("epic") },
+    ],
+    legendary: [
+        { name: "AK-47 | Fire Serpent", value: 150.00, rarity: "legendary", media: getMediaForRarity("legendary") },
+        { name: "AWP | Dragon Lore", value: 200.00, rarity: "legendary", media: getMediaForRarity("legendary") },
+        { name: "M4A4 | Howl", value: 250.00, rarity: "legendary", media: getMediaForRarity("legendary") },
+        { name: "Desert Eagle | Blaze", value: 300.00, rarity: "legendary", media: getMediaForRarity("legendary") },
+        { name: "Karambit | Fade", value: 500.00, rarity: "legendary", media: getMediaForRarity("legendary") },
+    ]
+};
+
+// Case Prices
+const casePrices = {
+    common: 5.00,
+    rare: 25.00,
+    epic: 50.00,
+    legendary: 100.00
+};
+
+// Rarity Weights for Case Opening
+const rarityWeights = {
+    common: {
+        common: 70,
+        rare: 25,
+        epic: 4,
+        legendary: 1
+    },
+    rare: {
+        common: 50,
+        rare: 35,
+        epic: 12,
+        legendary: 3
+    },
+    epic: {
+        common: 30,
+        rare: 40,
+        epic: 25,
+        legendary: 5
+    },
+    legendary: {
+        common: 10,
+        rare: 15,
+        epic: 10,
+        legendary: 65
+    }
+};
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    updateBalance();
+    updateInventory();
+    setupEventListeners();
+    initializeFaceSafeImages();
+    randomizeCaseCards();
+});
+
+// Randomize case card images on load with no repetition
+function randomizeCaseCards() {
+    const caseImages = document.querySelectorAll('.case-image:not(.legendary-case)');
+    const images = [...mediaPool.images]; // Copy array
+    const usedImages = new Set();
+    
+    // Shuffle array for better randomization
+    const shuffled = images.sort(() => Math.random() - 0.5);
+    
+    caseImages.forEach((caseImg, index) => {
+        const randomImage = shuffled[index % shuffled.length];
+        usedImages.add(randomImage);
+        caseImg.style.backgroundImage = `url('${randomImage}')`;
+    });
+    
+    // Randomize legendary case video
+    const legendaryVideo = document.getElementById('legendaryCaseVideo');
+    if (legendaryVideo) {
+        const randomVideo = mediaPool.videos[Math.floor(Math.random() * mediaPool.videos.length)];
+        legendaryVideo.src = randomVideo;
+        legendaryVideo.load();
+    }
+    
+    // Randomize section backgrounds with no repetition
+    const sections = [
+        { selector: '.case-section', pool: mediaPool.images },
+        { selector: '.upgrade-section', pool: mediaPool.images },
+        { selector: '.inventory-section', pool: mediaPool.images },
+        { selector: '.header', pool: mediaPool.images },
+        { selector: '.modal-content', pool: mediaPool.images }
+    ];
+    
+    const usedSectionImages = new Set();
+    const shuffledSections = [...mediaPool.images].sort(() => Math.random() - 0.5);
+    
+    sections.forEach((section, index) => {
+        const element = document.querySelector(section.selector);
+        if (element) {
+            let randomMedia;
+            do {
+                randomMedia = shuffledSections[index % shuffledSections.length];
+            } while (usedSectionImages.has(randomMedia) && usedSectionImages.size < shuffledSections.length);
+            usedSectionImages.add(randomMedia);
+            element.style.backgroundImage = `url('${randomMedia}')`;
+        }
+    });
+}
+
+function setupEventListeners() {
+    document.getElementById('addFunds').addEventListener('click', addFunds);
+    document.getElementById('upgradeBtn').addEventListener('click', performUpgrade);
+    document.getElementById('emptyInventory').addEventListener('click', emptyInventory);
+}
+
+function emptyInventory() {
+    if (inventory.length === 0) {
+        showNotification('Inventory is already empty!', 'error');
+        return;
+    }
+    
+    if (confirm(`Are you sure you want to empty your inventory? You will lose ${inventory.length} item(s)!`)) {
+        inventory = [];
+        selectedItem = null;
+        updateInventory();
+        showNotification('Inventory emptied!', 'success');
+    }
+}
+
+function updateBalance() {
+    document.getElementById('balance').textContent = `$${balance.toFixed(2)}`;
+}
+
+function updateInventory() {
+    const inventoryGrid = document.getElementById('inventory');
+    const upgradeInventory = document.getElementById('upgradeInventory');
+    
+    if (inventory.length === 0) {
+        inventoryGrid.innerHTML = '<p class="placeholder">Your inventory is empty. Open some cases!</p>';
+        upgradeInventory.innerHTML = '<p class="placeholder">No items to upgrade</p>';
+        return;
+    }
+
+    inventoryGrid.innerHTML = '';
+    upgradeInventory.innerHTML = '';
+
+    inventory.forEach((item, index) => {
+        const itemElement = createItemElement(item, index, false);
+        const upgradeItemElement = createItemElement(item, index, true);
+        
+        inventoryGrid.appendChild(itemElement);
+        upgradeInventory.appendChild(upgradeItemElement);
+    });
+}
+
+function createItemElement(item, index, isUpgrade) {
+    const div = document.createElement('div');
+    div.className = 'inventory-item';
+    if (selectedItem === index && isUpgrade) {
+        div.classList.add('selected');
+    }
+    
+    const media = item.media || { type: 'image', src: 'rana2.jpg' };
+    let mediaHtml = '';
+    
+    if (media.type === 'video') {
+        mediaHtml = `<video class="item-video" autoplay muted loop playsinline><source src="${media.src}" type="video/mp4"></video>`;
+    } else {
+        mediaHtml = `<div class="item-image" style="background-image: url('${media.src}');"></div>`;
+    }
+    
+    div.innerHTML = `
+        ${mediaHtml}
+        <div class="item-rarity rarity-${item.rarity}">${item.rarity}</div>
+        <div class="item-name">${item.name}</div>
+        <div class="item-value">$${item.value.toFixed(2)}</div>
+    `;
+    
+    if (isUpgrade) {
+        div.addEventListener('click', () => selectItemForUpgrade(index));
+    }
+    
+    return div;
+}
+
+function selectItemForUpgrade(index) {
+    if (index >= inventory.length || index < 0) return;
+    selectedItem = index;
+    updateInventory();
+    showUpgradePreview(inventory[index]);
+}
+
+function showUpgradePreview(item) {
+    if (!item) return;
+    
+    const preview = document.getElementById('upgradePreview');
+    const upgradeBtn = document.getElementById('upgradeBtn');
+    
+    const nextRarity = getNextRarity(item.rarity);
+    if (!nextRarity) {
+        preview.innerHTML = '<p class="placeholder">This item is already at maximum rarity!</p>';
+        upgradeBtn.disabled = true;
+        upgradeBtn.onclick = null;
+        return;
+    }
+    
+    const upgradeCost = item.value * 0.5;
+    const successChance = getUpgradeChance(item.rarity, nextRarity);
+    
+    preview.innerHTML = `
+        <div style="margin-bottom: 15px;">
+            <p><strong>Current:</strong> ${item.name} (${item.rarity}) - $${item.value.toFixed(2)}</p>
+            <p><strong>Upgrade To:</strong> ${nextRarity.toUpperCase()}</p>
+            <p><strong>Cost:</strong> $${upgradeCost.toFixed(2)}</p>
+            <p><strong>Success Chance:</strong> ${successChance}%</p>
+            <p style="color: #ef4444; margin-top: 10px;"><strong>Warning:</strong> Failed upgrades will destroy your item!</p>
+        </div>
+    `;
+    
+    upgradeBtn.disabled = balance < upgradeCost;
+    upgradeBtn.onclick = () => performUpgrade();
+}
+
+function getNextRarity(rarity) {
+    const rarities = ['common', 'rare', 'epic', 'legendary'];
+    const currentIndex = rarities.indexOf(rarity);
+    return currentIndex < rarities.length - 1 ? rarities[currentIndex + 1] : null;
+}
+
+function getUpgradeChance(currentRarity, nextRarity) {
+    const chances = {
+        'common-rare': 75,
+        'rare-epic': 50,
+        'epic-legendary': 25
+    };
+    return chances[`${currentRarity}-${nextRarity}`] || 0;
+}
+
+function performUpgrade() {
+    if (selectedItem === null || selectedItem >= inventory.length) return;
+    
+    const item = inventory[selectedItem];
+    if (!item) return;
+    
+    const nextRarity = getNextRarity(item.rarity);
+    if (!nextRarity) return;
+    
+    const upgradeCost = item.value * 0.5;
+    if (balance < upgradeCost) {
+        showNotification('Insufficient balance!', 'error');
+        return;
+    }
+    
+    balance -= upgradeCost;
+    updateBalance();
+    
+    const successChance = getUpgradeChance(item.rarity, nextRarity);
+    const success = Math.random() * 100 < successChance;
+    
+    if (success) {
+        // Upgrade successful - get new random media for upgraded item
+        const upgradedItems = items[nextRarity];
+        const newItem = {
+            ...upgradedItems[Math.floor(Math.random() * upgradedItems.length)],
+            id: Date.now()
+        };
+        // Assign new random media to prevent repetition
+        newItem.media = getMediaForRarity(nextRarity);
+        inventory[selectedItem] = newItem;
+        showNotification(`Upgrade successful! You got ${newItem.name}!`, 'success');
+        selectedItem = null; // Reset selection after successful upgrade
+    } else {
+        // Upgrade failed - item destroyed
+        inventory.splice(selectedItem, 1);
+        selectedItem = null;
+        showNotification('Upgrade failed! Your item was destroyed.', 'error');
+    }
+    
+    updateInventory();
+    document.getElementById('upgradePreview').innerHTML = '<p class="placeholder">Select an item to see upgrade options</p>';
+    document.getElementById('upgradeBtn').disabled = true;
+}
+
+function openCase(caseType) {
+    const price = casePrices[caseType];
+    
+    if (balance < price) {
+        showNotification('Insufficient balance!', 'error');
+        return;
+    }
+    
+    if (!casePrices[caseType]) {
+        showNotification('Invalid case type!', 'error');
+        return;
+    }
+    
+    balance -= price;
+    updateBalance();
+    
+    // Disable all case buttons
+    document.querySelectorAll('.btn-case').forEach(btn => btn.disabled = true);
+    
+    // Show modal and start animation
+    const modal = document.getElementById('caseModal');
+    modal.classList.add('active');
+    
+    // Animate case opening
+    animateCaseOpening(caseType);
+}
+
+function animateCaseOpening(caseType) {
+    const caseItems = document.getElementById('caseItems');
+    const caseResult = document.getElementById('caseResult');
+    
+    caseItems.innerHTML = '';
+    caseResult.innerHTML = '';
+    
+    // Pre-determine the result item
+    const resultItem = getRandomItem(caseType);
+    resultItem.id = Date.now();
+    
+    // Create a single animated item container
+    const animatedItem = document.createElement('div');
+    animatedItem.className = 'case-item-preview animated-spinning';
+    caseItems.appendChild(animatedItem);
+    
+    // Pre-generate items to show during animation
+    const itemsToShow = [];
+    for (let i = 0; i < 12; i++) {
+        itemsToShow.push(getRandomItem(caseType));
+    }
+    
+    let currentIndex = 0;
+    const totalCycles = 25;
+    const updateSpeed = 120; // milliseconds between updates
+    
+    function updateAnimation() {
+        if (currentIndex < totalCycles) {
+            const currentItem = itemsToShow[currentIndex % itemsToShow.length];
+            const media = currentItem.media || { type: 'image', src: 'rana2.jpg' };
+            
+            let mediaHtml = '';
+            if (media.type === 'video') {
+                mediaHtml = `<video class="spinning-item-video" autoplay muted loop playsinline><source src="${media.src}" type="video/mp4"></video>`;
+            } else {
+                mediaHtml = `<div class="spinning-item-image" style="background-image: url('${media.src}');"></div>`;
+            }
+            
+            animatedItem.innerHTML = `
+                ${mediaHtml}
+                <div class="item-name">${currentItem.name}</div>
+                <div class="item-value">$${currentItem.value.toFixed(2)}</div>
+            `;
+            currentIndex++;
+            setTimeout(updateAnimation, updateSpeed);
+        } else {
+            // Animation complete - show result with fade effect
+            animatedItem.style.opacity = '0';
+            animatedItem.style.transition = 'opacity 0.3s ease';
+            
+            setTimeout(() => {
+                const resultMedia = resultItem.media || { type: 'image', src: 'rana2.jpg' };
+                
+                caseItems.innerHTML = '';
+                
+                if (resultMedia.type === 'video') {
+                    // Create video element properly to avoid glitches
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = 'result-item';
+                    resultDiv.style.borderColor = getRarityColor(resultItem.rarity);
+                    
+                    const video = document.createElement('video');
+                    video.className = 'result-item-video';
+                    video.autoplay = true;
+                    video.muted = true;
+                    video.loop = true;
+                    video.playsInline = true;
+                    video.src = resultMedia.src;
+                    video.load();
+                    
+                    resultDiv.appendChild(video);
+                    resultDiv.innerHTML += `
+                        <div class="item-rarity rarity-${resultItem.rarity}" style="display: inline-block; margin-bottom: 10px;">${resultItem.rarity.toUpperCase()}</div>
+                        <div class="item-name" style="font-size: 28px; margin: 15px 0;">${resultItem.name}</div>
+                        <div class="item-value" style="font-size: 32px;">$${resultItem.value.toFixed(2)}</div>
+                    `;
+                    
+                    caseResult.innerHTML = '';
+                    caseResult.appendChild(resultDiv);
+                } else {
+                    caseResult.innerHTML = `
+                        <div class="result-item" style="border-color: ${getRarityColor(resultItem.rarity)}">
+                            <div class="result-item-image" style="background-image: url('${resultMedia.src}');"></div>
+                            <div class="item-rarity rarity-${resultItem.rarity}" style="display: inline-block; margin-bottom: 10px;">${resultItem.rarity.toUpperCase()}</div>
+                            <div class="item-name" style="font-size: 28px; margin: 15px 0;">${resultItem.name}</div>
+                            <div class="item-value" style="font-size: 32px;">$${resultItem.value.toFixed(2)}</div>
+                        </div>
+                    `;
+                }
+                
+                inventory.push(resultItem);
+                updateInventory();
+                showNotification(`You got ${resultItem.name}!`, 'success');
+                
+                // Re-enable case buttons
+                document.querySelectorAll('.btn-case').forEach(btn => btn.disabled = false);
+            }, 300);
+        }
+    }
+    
+    // Start animation after a brief delay
+    setTimeout(updateAnimation, 100);
+}
+
+function getRandomItem(caseType) {
+    const weights = rarityWeights[caseType];
+    const random = Math.random() * 100;
+    
+    let cumulative = 0;
+    let selectedRarity = 'common';
+    
+    for (const [rarity, weight] of Object.entries(weights)) {
+        cumulative += weight;
+        if (random <= cumulative) {
+            selectedRarity = rarity;
+            break;
+        }
+    }
+    
+    const rarityItems = items[selectedRarity];
+    const selectedItem = { ...rarityItems[Math.floor(Math.random() * rarityItems.length)] };
+    // Assign new random media to prevent repetition
+    selectedItem.media = getMediaForRarity(selectedRarity);
+    return selectedItem;
+}
+
+function getRarityColor(rarity) {
+    const colors = {
+        common: '#6b7280',
+        rare: '#3b82f6',
+        epic: '#a855f7',
+        legendary: '#f59e0b'
+    };
+    return colors[rarity] || '#6b7280';
+}
+
+function closeCaseModal() {
+    const modal = document.getElementById('caseModal');
+    modal.classList.remove('active');
+    
+    // Re-enable case buttons in case modal was closed early
+    document.querySelectorAll('.btn-case').forEach(btn => btn.disabled = false);
+}
+
+function addFunds() {
+    const amount = 500;
+    balance += amount;
+    updateBalance();
+    showNotification(`Added $${amount.toFixed(2)} to your balance!`, 'success');
+}
+
+function showNotification(message, type = 'success') {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.className = `notification ${type} show`;
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
+}
+
+// Close modal on outside click
+document.getElementById('caseModal').addEventListener('click', (e) => {
+    if (e.target.id === 'caseModal') {
+        closeCaseModal();
+    }
+});
+

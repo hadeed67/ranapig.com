@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rana Gambling Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="overlay"></div>
+    
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-container">
+                <img src="rana3.png" alt="Logo" class="logo-image">
+                <div class="logo">ranacasinolun.inc</div>
+            </div>
+            <div class="balance-container">
+                <div class="balance">
+                    <span class="balance-label">Balance:</span>
+                    <span class="balance-amount" id="balance">$1000.00</span>
+                </div>
+                <button class="btn btn-primary" id="addFunds">Add Funds</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Case Opening Section -->
+            <section class="case-section">
+                <h2 class="section-title">Case Opening</h2>
+                <div class="case-grid">
+                    <div class="case-card" data-case="common">
+                        <div class="case-image common-case" style="background-image: url('zz.jpg');"></div>
+                        <div class="case-info">
+                            <h3>Rana Common Case</h3>
+                            <p class="case-price">$5.00</p>
+                            <button class="btn btn-case" onclick="openCase('common')">Open Case</button>
+                        </div>
+                    </div>
+                    <div class="case-card" data-case="rare">
+                        <div class="case-image rare-case" style="background-image: url('ranaxx.png');"></div>
+                        <div class="case-info">
+                            <h3>Rana Rare Case</h3>
+                            <p class="case-price">$25.00</p>
+                            <button class="btn btn-case" onclick="openCase('rare')">Open Case</button>
+                        </div>
+                    </div>
+                    <div class="case-card" data-case="epic">
+                        <div class="case-image epic-case" style="background-image: url('rana3.png');"></div>
+                        <div class="case-info">
+                            <h3>Rana Epic Case</h3>
+                            <p class="case-price">$50.00</p>
+                            <button class="btn btn-case" onclick="openCase('epic')">Open Case</button>
+                        </div>
+                    </div>
+                    <div class="case-card" data-case="legendary">
+                        <div class="case-image legendary-case">
+                            <video class="legendary-case-video" id="legendaryCaseVideo" autoplay muted loop playsinline>
+                                <source src="rana gif.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="case-info">
+                            <h3>Rana Legendary Case</h3>
+                            <p class="case-price">$100.00</p>
+                            <button class="btn btn-case" onclick="openCase('legendary')">Open Case</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Upgrade Section -->
+            <section class="upgrade-section">
+                <h2 class="section-title">Upgrade Items</h2>
+                <div class="upgrade-container">
+                    <div class="upgrade-slot">
+                        <h3>Select Item to Upgrade</h3>
+                        <div class="inventory-grid" id="upgradeInventory"></div>
+                    </div>
+                    <div class="upgrade-preview">
+                        <div class="upgrade-info">
+                            <h3>Upgrade Preview</h3>
+                            <div id="upgradePreview">
+                                <p class="placeholder">Select an item to see upgrade options</p>
+                            </div>
+                            <button class="btn btn-upgrade" id="upgradeBtn" disabled>Upgrade</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Inventory Section -->
+            <section class="inventory-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <h2 class="section-title" style="margin: 0;">Your Inventory</h2>
+                    <button class="btn btn-danger" id="emptyInventory" onclick="emptyInventory()">Empty Inventory</button>
+                </div>
+                <div class="inventory-grid" id="inventory"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Case Opening Modal -->
+    <div class="modal" id="caseModal">
+        <div class="modal-content">
+            <div class="case-opening-animation">
+                <div class="case-items" id="caseItems"></div>
+                <div class="case-result" id="caseResult"></div>
+            </div>
+            <button class="btn btn-close" onclick="closeCaseModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
