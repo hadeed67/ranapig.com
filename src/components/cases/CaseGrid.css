@@ -1,0 +1,48 @@
+.case-grid-container {
+  padding: var(--spacing-xl) 0;
+}
+
+.section-title {
+  font-size: 36px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.case-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-lg);
+  padding: 0 var(--spacing-lg);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Responsive - from mobile.css but specific to case grid */
+@media (max-width: 1024px) {
+  .case-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+  }
+}
+
+@media (max-width: 768px) {
+  .case-grid-container {
+    padding: var(--spacing-lg) 0;
+  }
+  
+  .section-title {
+    font-size: 28px;
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .case-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+    padding: 0 var(--spacing-sm);
+  }
+}

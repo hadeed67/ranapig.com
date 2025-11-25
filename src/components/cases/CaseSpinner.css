@@ -1,0 +1,114 @@
+.case-spinner {
+  width: 100%;
+  height: 350px;
+  position: relative;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: var(--radius-lg);
+  margin: var(--spacing-xl) 0;
+}
+
+.spinner-track {
+  display: flex;
+  gap: 20px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(0, -50%);
+  padding: 0 20px;
+}
+
+.spinner-item {
+  flex-shrink: 0;
+  width: 200px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  text-align: center;
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+}
+
+.spinner-item-media {
+  width: 100%;
+  height: 180px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-sm);
+  overflow: hidden;
+}
+
+.spinner-item-media img,
+.spinner-item-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: brightness(1.1) contrast(0.95) saturate(1.05);
+}
+
+.spinner-item-rarity {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: var(--spacing-xs);
+}
+
+.spinner-item-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  margin: var(--spacing-xs) 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spinner-item-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-success);
+  margin: 0;
+}
+
+/* Rarity borders */
+.spinner-item-common { border-color: var(--rarity-common); }
+.spinner-item-rare { border-color: var(--rarity-rare); }
+.spinner-item-epic { border-color: var(--rarity-epic); }
+.spinner-item-legendary { border-color: var(--rarity-legendary); }
+
+/* Selection indicator */
+.spinner-selector {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, 
+    transparent 0%, 
+    var(--color-primary) 20%, 
+    var(--color-primary) 80%, 
+    transparent 100%
+  );
+  box-shadow: 0 0 30px var(--color-primary);
+  transform: translateX(-50%);
+  z-index: 10;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .case-spinner {
+    height: 280px;
+  }
+  
+  .spinner-item {
+    width: 160px;
+  }
+  
+  .spinner-item-media {
+    height: 140px;
+  }
+}

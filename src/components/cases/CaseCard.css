@@ -1,0 +1,142 @@
+.case-card {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 2px solid transparent;
+  transition: all var(--transition-medium);
+  cursor: pointer;
+  position: relative;
+}
+
+.case-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
+  opacity: 0;
+  transition: opacity var(--transition-medium);
+}
+
+.case-card:hover::before {
+  opacity: 1;
+}
+
+.case-card:hover {
+  border-color: var(--glass-border);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.case-media {
+  width: 100%;
+  height: 250px;
+  position: relative;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.case-media img,
+.case-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center 35%;
+  filter: brightness(1.1) contrast(0.95) saturate(1.05);
+}
+
+.case-info {
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.case-rarity {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  align-self: flex-start;
+}
+
+.rarity-common {
+  background: var(--rarity-common);
+  color: white;
+}
+
+.rarity-rare {
+  background: var(--rarity-rare);
+  color: white;
+}
+
+.rarity-epic {
+  background: var(--rarity-epic);
+  color: white;
+}
+
+.rarity-legendary {
+  background: var(--rarity-legendary);
+  color: white;
+}
+
+.case-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.case-description {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.case-price {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-success);
+  text-align: center;
+  margin: var(--spacing-sm) 0;
+}
+
+/* Rarity-specific glow on hover */
+.case-card-common:hover {
+  box-shadow: 0 10px 40px rgba(107, 114, 128, 0.3);
+}
+
+.case-card-rare:hover {
+  box-shadow: 0 10px 40px rgba(59, 130, 246, 0.4);
+}
+
+.case-card-epic:hover {
+  box-shadow: 0 10px 40px rgba(168, 85, 247, 0.4);
+}
+
+.case-card-legendary:hover {
+  box-shadow: 0 10px 40px rgba(245, 158, 11, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .case-media {
+    height: 200px;
+  }
+  
+  .case-info {
+    padding: var(--spacing-md);
+  }
+  
+  .case-name {
+    font-size: 20px;
+  }
+  
+  .case-price {
+    font-size: 24px;
+  }
+}

@@ -1,0 +1,105 @@
+.notification-container {
+  position: fixed;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  z-index: var(--z-notification);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  max-width: 400px;
+}
+
+.notification {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--bg-primary);
+  backdrop-filter: blur(var(--glass-blur));
+  border-radius: var(--radius-md);
+  border-left: 4px solid;
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  animation: slideInRight var(--transition-medium) ease-out;
+  transition: all var(--transition-fast);
+}
+
+.notification:hover {
+  transform: translateX(-5px);
+  box-shadow: var(--shadow-xl);
+}
+
+.notification-icon {
+  font-size: 24px;
+  font-weight: bold;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.notification-message {
+  color: white;
+  font-size: 14px;
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* Notification types */
+.notification-success {
+  border-left-color: var(--color-success);
+}
+
+.notification-success .notification-icon {
+  color: var(--color-success);
+  background: rgba(74, 222, 128, 0.2);
+}
+
+.notification-error {
+  border-left-color: var(--color-error);
+}
+
+.notification-error .notification-icon {
+  color: var(--color-error);
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.notification-warning {
+  border-left-color: var(--color-warning);
+}
+
+.notification-warning .notification-icon {
+  color: var(--color-warning);
+  background: rgba(251, 191, 36, 0.2);
+}
+
+.notification-info {
+  border-left-color: var(--color-primary);
+}
+
+.notification-info .notification-icon {
+  color: var(--color-primary);
+  background: rgba(102, 126, 234, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .notification-container {
+    top: auto;
+    bottom: calc(80px + var(--spacing-md)); /* Above mobile nav */
+    left: var(--spacing-sm);
+    right: var(--spacing-sm);
+    max-width: none;
+  }
+  
+  .notification {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .notification-message {
+    font-size: 13px;
+  }
+}

@@ -1,73 +1,16 @@
-# Rana Gambling Simulator
+# React + Vite
 
-A modern gambling simulator inspired by CS:GO skin gambling sites like CSRoll and SkinClub, featuring case opening, item upgrades, and inventory management.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Features
+Currently, two official plugins are available:
 
-- **Case Opening**: Open different rarity cases (Common, Rare, Epic, Legendary) with animated openings
-- **Item Upgrades**: Upgrade your items to higher rarities with risk/reward mechanics
-- **Inventory System**: Manage your collection of items
-- **Balance System**: Start with $1000 and add funds as needed
-- **Modern UI**: Beautiful gradient designs with backdrop blur effects
-- **Animations**: Smooth case opening animations and visual effects
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Setup
+## React Compiler
 
-1. **Add Background Image**: 
-   - Place your background image in the project root directory
-   - Name it `background.jpg`
-   - The image will be used as the full-screen background with an overlay
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-2. **Open the Application**:
-   - Simply open `index.html` in your web browser
-   - No server or build process required!
+## Expanding the ESLint configuration
 
-## How to Play
-
-### Opening Cases
-1. Choose a case type (Common $5, Rare $25, Epic $50, Legendary $100)
-2. Click "Open Case" to purchase and open
-3. Watch the animation and see what item you got!
-4. Items are automatically added to your inventory
-
-### Upgrading Items
-1. Go to the "Upgrade Items" section
-2. Click on an item from your inventory
-3. View the upgrade preview showing:
-   - Target rarity
-   - Upgrade cost (50% of item value)
-   - Success chance
-4. Click "Upgrade" to attempt the upgrade
-   - **Success**: Item upgrades to next rarity
-   - **Failure**: Item is destroyed (you lose it!)
-
-### Upgrade Success Rates
-- Common → Rare: 75% chance
-- Rare → Epic: 50% chance
-- Epic → Legendary: 25% chance
-
-## Technical Details
-
-- Pure HTML, CSS, and JavaScript (no dependencies)
-- Responsive design that works on desktop and mobile
-- Local storage ready (can be extended to save progress)
-- Modern CSS features: backdrop-filter, gradients, animations
-
-## Customization
-
-You can easily customize:
-- Item names and values in `script.js`
-- Case prices in the `casePrices` object
-- Rarity drop rates in `rarityWeights`
-- Colors and styling in `styles.css`
-- Background image by replacing `background.jpg`
-
-## Browser Compatibility
-
-Works best in modern browsers that support:
-- CSS backdrop-filter
-- CSS Grid
-- ES6 JavaScript features
-
-Enjoy gambling responsibly! 🎰
-
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
